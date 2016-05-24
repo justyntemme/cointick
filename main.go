@@ -2,44 +2,62 @@ package main
 
 import (
 	"os/exec"
+	"os"
 	"strconv"
+	"strings"
+	"fmt"
+	"time"
 )
 
 type coins struct {
 	btc float32
 	ltc float32
-	dogecoin float32
+	doge float32
 }
 
-func getBtc() float32 {
-	var val float32
-
-
-	return	val
+func getBtc(tick *coins)  {
+	out,err :=exec.Command("coinfetch","btc", "usd").Output()
+	out64,err := strconv.ParseFloat(strings.Trim(string(out), "\n"), 32)
+	tick.btc = float32(out64)
+	if err != nil {
+		return
+	}
 }
 
-func getLtc() float32 {
-	var val float32
-
-	return val
+func getLtc(tick *coins)  {
+	out,err :=exec.Command("coinfetch", "ltc", "usd").Output()
+	out64,err := strconv.ParseFloat(strings.Trim(string(out),"\n"), 32)
+	tick.ltc = float32(out64)
+	if err != nil {
+		return
+	}
 }
 
-func dogecoin() float32 {
-	var val float32
-
-
-	return val
+func getDogecoin(tick *coins) {
+	out,err :=exec.Command("coinfetch", "-a bter", "doge", "usd").Output()
+	out64,err := strconv.ParseFloat(strings.Trim(string(out), "\n"), 32)
+	tick.doge = float32(out64)
+	if err != nil {
+		return
+	}
 }
 
+func updateDisplay(tick *coins) {
+	fmt.Println("BTC/USD \t ",tick.btc)
+	fmt.Println("LTC/USD \t ",tick.ltc)
+	fmt.Println("DOGE/USD \t ",tick.doge)
+}
 
 func main() {
 	tick := new(coins)
-	out,err := exec.Command("btc","usd").Output()
-	out64,err := strconv.ParseFloat(string(out), 32)
-	tick.btc = float32(out64)
-	if err == nil{
-		return
-	}else {
-		return
+	for {
+		getBtc(tick)
+		getLtc(tick)
+		getDogecoin(tick)
+		cmd := exec.Command("clear")
+		cmd.Stdout = os.Stdout
+		cmd.Run()
+		updateDisplay(tick)
+		time.Sleep(20)
 	}
 }

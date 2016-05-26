@@ -7,11 +7,12 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"net"
 )
 
 type coins struct {
 	btc  float32
-	ltc  float32
+	ltc  string
 	doge float32
 }
 
@@ -25,16 +26,18 @@ func getBtc(tick *coins) {
 }
 
 func getLtc(tick *coins) {
-	out, err := exec.Command("coinfetch", "ltc", "usd").Output()
-	out64, err := strconv.ParseFloat(strings.Trim(string(out), "\n"), 32)
-	tick.ltc = float32(out64)
+	conn, _ := net.Dial("tcp","localhost:8888")
+	message := make([]byte, 1024)
+	fmt.Fprintf(conn,"-a ccc 1 ltc usd")
+	_, err := conn.Read(message)
+	tick.ltc = string(message)
 	if err != nil {
 		return
 	}
 }
 
 func getDogecoin(tick *coins) {
-	out, err := exec.Command("coinfetch", "-a bter", "doge", "usd").Output()
+	out, err := exec.Command("coinfetch", "-a ccc", "doge", "usd").Output()
 	out64, err := strconv.ParseFloat(strings.Trim(string(out), "\n"), 32)
 	tick.doge = float32(out64)
 	if err != nil {

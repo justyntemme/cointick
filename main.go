@@ -20,10 +20,11 @@ package main
 import (
 	"flag"
 	"fmt"
-	"net"
 	"os"
 	"os/exec"
 	"time"
+
+	"github.com/justyntemme/goCoinFetch"
 )
 
 type coins struct {
@@ -33,30 +34,11 @@ type coins struct {
 }
 
 func getBtc(tick *coins) error {
-	conn, _ := net.Dial("tcp", "localhost:8888")
-	message := make([]byte, 1024)
-	fmt.Fprintf(conn, "-a ccc 1 btc usd")
-	_, err := conn.Read(message)
-	tick.btc = string(message)
-	return err
+	tick.btc = goCoinFetch.GrabTicker("btc")
 }
 
 func getLtc(tick *coins) error {
-	conn, _ := net.Dial("tcp", "localhost:8888")
-	message := make([]byte, 1024)
-	fmt.Fprintf(conn, "-a ccc 1 ltc usd")
-	_, err := conn.Read(message)
-	tick.ltc = string(message)
-	return err
-}
-
-func getDogecoin(tick *coins) error {
-	conn, _ := net.Dial("tcp", "localhost:8888")
-	message := make([]byte, 1024)
-	fmt.Fprintf(conn, "-a ccc 1 doge usd")
-	_, err := conn.Read(message)
-	tick.doge = string(message)
-	return err
+	tick.doge = goCoinFetch.GrabTicker("ltc")
 }
 
 func updateDisplay(tick *coins, rotate string) {

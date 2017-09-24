@@ -32,37 +32,31 @@ type coins struct {
 	doge string
 }
 
-func getBtc(tick *coins) {
+func getBtc(tick *coins) error {
 	conn, _ := net.Dial("tcp", "localhost:8888")
 	message := make([]byte, 1024)
 	fmt.Fprintf(conn, "-a ccc 1 btc usd")
 	_, err := conn.Read(message)
 	tick.btc = string(message)
-	if err != nil {
-		return
-	}
+	return err
 }
 
-func getLtc(tick *coins) {
+func getLtc(tick *coins) error {
 	conn, _ := net.Dial("tcp", "localhost:8888")
 	message := make([]byte, 1024)
 	fmt.Fprintf(conn, "-a ccc 1 ltc usd")
 	_, err := conn.Read(message)
 	tick.ltc = string(message)
-	if err != nil {
-		return
-	}
+	return err
 }
 
-func getDogecoin(tick *coins) {
+func getDogecoin(tick *coins) error {
 	conn, _ := net.Dial("tcp", "localhost:8888")
 	message := make([]byte, 1024)
 	fmt.Fprintf(conn, "-a ccc 1 doge usd")
 	_, err := conn.Read(message)
 	tick.doge = string(message)
-	if err != nil {
-		return
-	}
+	return err
 }
 
 func updateDisplay(tick *coins, rotate string) {
@@ -93,10 +87,21 @@ func main() {
 
 	tick := new(coins)
 
+	var err error
+
 	for {
-		getBtc(tick)
-		getLtc(tick)
-		getDogecoin(tick)
+		err = getBtc(tick)
+		if err != nil {
+			fmt.Println(err)
+		}
+		err = getLtc(tick)
+		if err != nil {
+			fmt.Println(err)
+		}
+		err = getDogecoin(tick)
+		if err != nil {
+			fmt.Println(err)
+		}
 		cmd := exec.Command("clear")
 		cmd.Stdout = os.Stdout
 		cmd.Run()

@@ -18,11 +18,12 @@ This program is free software: you can redistribute it and/or modify
 package main
 
 import (
+	"flag"
 	"fmt"
+	"net"
 	"os"
 	"os/exec"
 	"time"
-	"net"
 )
 
 type coins struct {
@@ -32,9 +33,9 @@ type coins struct {
 }
 
 func getBtc(tick *coins) {
-	conn, _ := net.Dial("tcp","localhost:8888")
+	conn, _ := net.Dial("tcp", "localhost:8888")
 	message := make([]byte, 1024)
-	fmt.Fprintf(conn,"-a ccc 1 btc usd")
+	fmt.Fprintf(conn, "-a ccc 1 btc usd")
 	_, err := conn.Read(message)
 	tick.btc = string(message)
 	if err != nil {
@@ -43,9 +44,9 @@ func getBtc(tick *coins) {
 }
 
 func getLtc(tick *coins) {
-	conn, _ := net.Dial("tcp","localhost:8888")
+	conn, _ := net.Dial("tcp", "localhost:8888")
 	message := make([]byte, 1024)
-	fmt.Fprintf(conn,"-a ccc 1 ltc usd")
+	fmt.Fprintf(conn, "-a ccc 1 ltc usd")
 	_, err := conn.Read(message)
 	tick.ltc = string(message)
 	if err != nil {
@@ -54,9 +55,9 @@ func getLtc(tick *coins) {
 }
 
 func getDogecoin(tick *coins) {
-	conn, _ := net.Dial("tcp","localhost:8888")
+	conn, _ := net.Dial("tcp", "localhost:8888")
 	message := make([]byte, 1024)
-	fmt.Fprintf(conn,"-a ccc 1 doge usd")
+	fmt.Fprintf(conn, "-a ccc 1 doge usd")
 	_, err := conn.Read(message)
 	tick.doge = string(message)
 	if err != nil {
@@ -64,14 +65,34 @@ func getDogecoin(tick *coins) {
 	}
 }
 
-func updateDisplay(tick *coins) {
+func updateDisplay(tick *coins, rotate string) {
 	fmt.Println("BTC/USD \t ", tick.btc)
+	if rotate == "true" {
+		time.Sleep(500)
+		cmd := exec.Command("clear")
+		cmd.Stdout = os.Stdout
+		cmd.Run()
+	}
 	fmt.Println("LTC/USD \t ", tick.ltc)
+	if rotate == "true" {
+		time.Sleep(500)
+		cmd := exec.Command("clear")
+		cmd.Stdout = os.Stdout
+		cmd.Run()
+	}
 	fmt.Println("DOGE/USD \t ", tick.doge)
+	if rotate == "true" {
+		time.Sleep(500)
+	}
 }
 
 func main() {
+
+	rotate := flag.String("rotate", "flase", "OPTIONS: true,false. Rotates coins to only show one on screen at a time")
+	flag.Parse()
+
 	tick := new(coins)
+
 	for {
 		getBtc(tick)
 		getLtc(tick)
@@ -79,7 +100,8 @@ func main() {
 		cmd := exec.Command("clear")
 		cmd.Stdout = os.Stdout
 		cmd.Run()
-		updateDisplay(tick)
-		time.Sleep(20)
+		updateDisplay(tick, *rotate)
+		time.Sleep(2000)
 	}
+
 }

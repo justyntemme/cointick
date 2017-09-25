@@ -22,10 +22,13 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"runtime"
 	"time"
 
 	"github.com/justyntemme/goCoinFetch"
 )
+
+var clear map[string]func()
 
 type coins struct {
 	btc  string
@@ -44,18 +47,39 @@ func getLtc(tick *coins) {
 func updateDisplay(tick *coins, rotate string) {
 	fmt.Println("BTC/USD \t ", tick.btc)
 	if rotate == "true" {
-		time.Sleep(500)
-		cmd := exec.Command("clear")
-		cmd.Stdout = os.Stdout
-		cmd.Run()
+		time.Sleep(5000 * time.Millisecond)
+		clearScreen()
 	}
+
 	fmt.Println("LTC/USD \t ", tick.ltc)
 	if rotate == "true" {
-		time.Sleep(500)
+
+	}
+}
+
+func clearScreen() {
+	value, ok := clear[runtime.GOOS] //runtime.GOOS -> linux, windows, darwin etc.
+	if ok {                          //if we defined a clear func for that platform:
+		value() //we execute it
+	} else { //unsupported platform
+		panic("Your platform is unsupported! I can't clear terminal screen :(")
+	}
+}
+
+func init() {
+
+	clear = make(map[string]func())
+	clear["linux"] = func() {
 		cmd := exec.Command("clear")
 		cmd.Stdout = os.Stdout
 		cmd.Run()
 	}
+	clear["windows"] = func() {
+		cmd := exec.Command("cls")
+		cmd.Stdout = os.Stdout
+		cmd.Run()
+	}
+
 }
 
 func main() {
@@ -68,11 +92,9 @@ func main() {
 	for {
 		getBtc(tick)
 		getLtc(tick)
-		cmd := exec.Command("clear")
-		cmd.Stdout = os.Stdout
-		cmd.Run()
+		clearScreen()
 		updateDisplay(tick, *rotate)
-		time.Sleep(2000)
+		time.Sleep(10000 * time.Millisecond)
 	}
 
 }

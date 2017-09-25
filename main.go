@@ -33,12 +33,12 @@ type coins struct {
 	doge string
 }
 
-func getBtc(tick *coins) error {
+func getBtc(tick *coins) {
 	tick.btc = goCoinFetch.GrabTicker("btc")
 }
 
-func getLtc(tick *coins) error {
-	tick.doge = goCoinFetch.GrabTicker("ltc")
+func getLtc(tick *coins) {
+	tick.ltc = goCoinFetch.GrabTicker("LTC")
 }
 
 func updateDisplay(tick *coins, rotate string) {
@@ -56,10 +56,6 @@ func updateDisplay(tick *coins, rotate string) {
 		cmd.Stdout = os.Stdout
 		cmd.Run()
 	}
-	fmt.Println("DOGE/USD \t ", tick.doge)
-	if rotate == "true" {
-		time.Sleep(500)
-	}
 }
 
 func main() {
@@ -69,21 +65,9 @@ func main() {
 
 	tick := new(coins)
 
-	var err error
-
 	for {
-		err = getBtc(tick)
-		if err != nil {
-			fmt.Println(err)
-		}
-		err = getLtc(tick)
-		if err != nil {
-			fmt.Println(err)
-		}
-		err = getDogecoin(tick)
-		if err != nil {
-			fmt.Println(err)
-		}
+		getBtc(tick)
+		getLtc(tick)
 		cmd := exec.Command("clear")
 		cmd.Stdout = os.Stdout
 		cmd.Run()

@@ -34,7 +34,7 @@ var clear map[string]func()
 type coins struct {
 	btc  string
 	ltc  string
-	doge string
+
 }
 
 func getBtc(tick *coins) {

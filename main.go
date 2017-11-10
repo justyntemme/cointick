@@ -25,6 +25,8 @@ import (
 	"runtime"
 	"time"
 
+	"github.com/justyntemme/goCoinFetch"
+
 )
 
 var clear map[string]func()

@@ -1,5 +1,6 @@
 # cointick
-Command line ticker for getting cryptocoin data
+Cointick is a command line ticker that gets cryptocoin data every few seconds.
+Supports bitcoin and litecoin.
 
 ## Flags
 -freq (int): Polling frequency in seconds

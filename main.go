@@ -26,15 +26,13 @@ import (
 	"time"
 
 	"github.com/justyntemme/goCoinFetch"
-
 )
 
 var clear map[string]func()
 
 type coins struct {
-	btc  string
-	ltc  string
-
+	btc string
+	ltc string
 }
 
 func getBtc(tick *coins) {
@@ -53,9 +51,6 @@ func updateDisplay(tick *coins, rotate string) {
 	}
 
 	fmt.Println("LTC/USD \t ", tick.ltc)
-	if rotate == "true" {
-
-	}
 }
 
 func clearScreen() {

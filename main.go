@@ -35,22 +35,19 @@ type coins struct {
 	ltc string
 }
 
-func getBtc(tick *coins) {
-	tick.btc = goCoinFetch.GrabTicker("btc")
+func (c *coins) getBtc() {
+	c.btc = goCoinFetch.GrabTicker("btc")
 }
 
-func getLtc(tick *coins) {
-	tick.ltc = goCoinFetch.GrabTicker("LTC")
+func (c *coins) getLtc() {
+	c.ltc = goCoinFetch.GrabTicker("LTC")
 }
 
-func updateDisplay(tick *coins, rotate bool) {
-	fmt.Println("BTC/USD \t ", tick.btc)
-	if rotate {
-		time.Sleep(5000 * time.Millisecond)
-		clearScreen()
-	}
-
-	fmt.Println("LTC/USD \t ", tick.ltc)
+func (c *coins) Tick() {
+	c.getBtc()
+	c.getLtc()
+	fmt.Println("BTC/USD \t ", c.btc)
+	fmt.Println("LTC/USD \t ", c.ltc)
 }
 
 func clearScreen() {
@@ -82,17 +79,13 @@ func main() {
 
 	var freq int
 
-	rotate := flag.Bool("rotate", false, "Rotate coins to only show one on screen at a time")
 	flag.IntVar(&freq, "freq", 10, "Polling frequency in seconds")
 	flag.Parse()
 
 	tick := new(coins)
 
 	for {
-		getBtc(tick)
-		getLtc(tick)
-		clearScreen()
-		updateDisplay(tick, *rotate)
+		tick.Tick()
 		time.Sleep(time.Duration(freq) * time.Second)
 	}
 

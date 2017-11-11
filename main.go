@@ -20,82 +20,22 @@ package main
 import (
 	"flag"
 	"fmt"
-	"os"
-	"os/exec"
-	"runtime"
 	"time"
 
 	"github.com/justyntemme/goCoinFetch"
-
 )
-
-var clear map[string]func()
-
-type coins struct {
-	btc  string
-	ltc  string
-
-}
-
-func getBtc(tick *coins) {
-	tick.btc = goCoinFetch.GrabTicker("btc")
-}
-
-func getLtc(tick *coins) {
-	tick.ltc = goCoinFetch.GrabTicker("LTC")
-}
-
-func updateDisplay(tick *coins, rotate string) {
-	fmt.Println("BTC/USD \t ", tick.btc)
-	if rotate == "true" {
-		time.Sleep(5000 * time.Millisecond)
-		clearScreen()
-	}
-
-	fmt.Println("LTC/USD \t ", tick.ltc)
-	if rotate == "true" {
-
-	}
-}
-
-func clearScreen() {
-	value, ok := clear[runtime.GOOS] //runtime.GOOS -> linux, windows, darwin etc.
-	if ok {                          //if we defined a clear func for that platform:
-		value() //we execute it
-	} else { //unsupported platform
-		panic("Your platform is unsupported! I can't clear terminal screen :(")
-	}
-}
-
-func init() {
-
-	clear = make(map[string]func())
-	clear["linux"] = func() {
-		cmd := exec.Command("clear")
-		cmd.Stdout = os.Stdout
-		cmd.Run()
-	}
-	clear["windows"] = func() {
-		cmd := exec.Command("cls")
-		cmd.Stdout = os.Stdout
-		cmd.Run()
-	}
-
-}
 
 func main() {
 
-	rotate := flag.String("rotate", "flase", "OPTIONS: true,false. Rotates coins to only show one on screen at a time")
+	var freq int
+
+	flag.IntVar(&freq, "freq", 10, "Polling frequency in seconds")
 	flag.Parse()
 
-	tick := new(coins)
-
 	for {
-		getBtc(tick)
-		getLtc(tick)
-		clearScreen()
-		updateDisplay(tick, *rotate)
-		time.Sleep(10000 * time.Millisecond)
+		fmt.Println("BTC/USD \t ", goCoinFetch.GrabTicker("btc"))
+		fmt.Println("LTC/USD \t ", goCoinFetch.GrabTicker("ltc"))
+		time.Sleep(time.Duration(freq) * time.Second)
 	}
 
 }

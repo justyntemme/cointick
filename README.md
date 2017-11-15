@@ -10,4 +10,4 @@ Cointick is a command line ticker that gets cryptocoin data from the goCoinFetch
 
 
 ## Config file
-Tickers ["opt1","opt2","opt3"]
+Tickers = ["opt1","opt2","opt3"]

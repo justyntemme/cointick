@@ -21,51 +21,21 @@ import (
 	"flag"
 	"fmt"
 	"io/ioutil"
-	"os"
-	"os/exec"
-	"runtime"
 	"time"
 
 	"github.com/BurntSushi/toml"
 	"github.com/justyntemme/goCoinFetch"
+	"github.com/justytnemme/cointick/clear"
 )
 
 type config struct {
 	tickers []string
 }
 
-func clearScreen() {
-	value, ok := clear[runtime.GOOS]
-	//runtime.GOOS -> linux, windows, darwin etc.
-	if ok { //if we defined a clear func for that platform:
-		value() //we execute it
-	} else { //unsupported platform
-		panic("Your platform is unsupported! I can't clear terminal screen :(")
-	}
-}
-
 func init() {
-
-	clear = make(map[string]func())
-	clear["linux"] = func() {
-		cmd := exec.Command("clear")
-		cmd.Stdout = os.Stdout
-		cmd.Run()
-	}
-	clear["windows"] = func() {
-		cmd := exec.Command("cls")
-		cmd.Stdout = os.Stdout
-		cmd.Run()
-	}
-	clear["darwin"] = func() {
-		cmd := exec.Command("clear")
-		cmd.Stdout = os.Stdout
-		cmd.Run()
-	}
+	clear.Init()
 
 }
-
-var clear map[string]func()
 
 func main() {
 

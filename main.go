@@ -20,13 +20,19 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"os/exec"
 	"runtime"
 	"time"
 
+	"github.com/BurntSushi/toml"
 	"github.com/justyntemme/goCoinFetch"
 )
+
+type config struct {
+	tickers []string
+}
 
 func clearScreen() {
 	value, ok := clear[runtime.GOOS]
@@ -65,19 +71,36 @@ func main() {
 
 	freq := 10
 	rotate := false
+	configPath := ""
 	tickers := []string{}
 	tickersN := []string{}
 
+	flag.StringVar(&configPath, "config", "", "Where to find the config file for multiple tickers")
 	flag.IntVar(&freq, "freq", 10, "Polling frequency in seconds")
 	flag.BoolVar(&rotate, "rotate", false, "Displays one ticker at a time when set to true")
 	flag.Parse()
 
-	//Hardcoding will add flag functionality soon
-	tickersN = append(tickersN, "btc")
-	tickersN = append(tickersN, "ltc")
-	tickers = append(tickers, goCoinFetch.GrabTicker("btc"))
-	tickers = append(tickers, goCoinFetch.GrabTicker("ltc"))
+	if configPath != "" {
+		tomlBytes, err := ioutil.ReadFile(configPath)
+		if err != nil {
+			fmt.Print("Error:" + err.Error())
+		}
+		tomlData := string(tomlBytes)
+		var c config
+		if _, err := toml.Decode(tomlData, &c); err != nil {
+			fmt.Println("Error:" + err.Error())
+		}
+		for index, _ := range c.tickers {
+			tickersN = append(tickersN, c.tickers[index])
+			tickers = append(tickers, goCoinFetch.GrabTicker(c.tickers[index]))
 
+		}
+	}
+	// Checks if no config path is used, if so defualts to BTC
+	if configPath == "" {
+		tickersN = append(tickersN, "btc")
+		tickers = append(tickers, goCoinFetch.GrabTicker("btc"))
+	}
 	if rotate == true {
 		for {
 			for index, _ := range tickers {

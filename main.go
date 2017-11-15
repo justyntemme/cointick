@@ -24,8 +24,8 @@ import (
 	"time"
 
 	"github.com/BurntSushi/toml"
+	"github.com/justyntemme/cointick/clear"
 	"github.com/justyntemme/goCoinFetch"
-	"github.com/justytnemme/cointick/clear"
 )
 
 type config struct {
@@ -76,7 +76,7 @@ func main() {
 			for index, _ := range tickers {
 				fmt.Println(tickersN[index] + "/USD\n" + tickers[index])
 				time.Sleep(time.Duration(freq) * time.Second)
-				clearScreen()
+				clear.ClearScreen()
 			}
 
 		}
@@ -86,7 +86,7 @@ func main() {
 			fmt.Println(tickersN[index] + "/USD\n" + tickers[index])
 		}
 		time.Sleep(time.Duration(freq) * time.Second)
-		clearScreen()
+		clear.ClearScreen()
 	}
 
 }

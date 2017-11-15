@@ -20,11 +20,10 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"time"
 
-	"github.com/BurntSushi/toml"
 	"github.com/justyntemme/cointick/clear"
+	"github.com/justyntemme/cointick/configReader"
 	"github.com/justyntemme/goCoinFetch"
 )
 
@@ -52,36 +51,17 @@ func main() {
 	rotate := false
 	configPath := ""
 
-	tickersN := []string{}
-
 	flag.StringVar(&configPath, "config", "", "Where to find the config file for multiple tickers")
 	flag.IntVar(&freq, "freq", 10, "Polling frequency in seconds")
 	flag.BoolVar(&rotate, "rotate", false, "Displays one ticker at a time when set to true")
 	flag.Parse()
 
-	if configPath != "" {
-		tomlBytes, err := ioutil.ReadFile(configPath)
-		if err != nil {
-			fmt.Print("Error:" + err.Error())
-		}
-		tomlData := string(tomlBytes)
-		var c config
-		if _, err := toml.Decode(tomlData, &c); err != nil {
-			fmt.Println("Error:" + err.Error())
-		}
-		for index, _ := range c.tickers {
-			tickersN = append(tickersN, c.tickers[index])
+	configReader.ParseConfig(configPath)
 
-		}
-	}
-	// Checks if no config path is used, if so defualts to BTC
-	if configPath == "" {
-		tickersN = append(tickersN, "btc")
-	}
 	if rotate == true {
 		for {
-			for index, _ := range tickersN {
-				fmt.Println(tickersN[index] + "/USD\n" + goCoinFetch.GrabTicker(tickersN[index]))
+			for _, element := range configReader.ReturnTickers() {
+				fmt.Println(element + "/USD\n" + goCoinFetch.GrabTicker(element))
 				time.Sleep(time.Duration(freq) * time.Second)
 				clear.ClearScreen()
 			}
@@ -89,8 +69,8 @@ func main() {
 		}
 	}
 	for {
-		for index, _ := range tickersN {
-			fmt.Println(tickersN[index] + "/USD\n" + goCoinFetch.GrabTicker(tickersN[index]))
+		for _, element := range configReader.ReturnTickers() {
+			fmt.Println(element + "/USD\n" + goCoinFetch.GrabTicker(element))
 		}
 		time.Sleep(time.Duration(freq) * time.Second)
 		clear.ClearScreen()

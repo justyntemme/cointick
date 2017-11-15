@@ -71,14 +71,12 @@ func main() {
 		}
 		for index, _ := range c.tickers {
 			tickersN = append(tickersN, c.tickers[index])
-			tickers = append(tickers, goCoinFetch.GrabTicker(c.tickers[index]))
 
 		}
 	}
 	// Checks if no config path is used, if so defualts to BTC
 	if configPath == "" {
 		tickersN = append(tickersN, "btc")
-		tickers = append(tickers, goCoinFetch.GrabTicker("btc"))
 	}
 	if rotate == true {
 		for {
@@ -91,7 +89,7 @@ func main() {
 		}
 	}
 	for {
-		for index, _ := range tickers {
+		for index, _ := range tickersN {
 			fmt.Println(tickersN[index] + "/USD\n" + goCoinFetch.GrabTicker(tickersN[index]))
 		}
 		time.Sleep(time.Duration(freq) * time.Second)

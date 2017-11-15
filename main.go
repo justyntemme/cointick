@@ -20,22 +20,80 @@ package main
 import (
 	"flag"
 	"fmt"
+	"os"
+	"os/exec"
+	"runtime"
 	"time"
 
 	"github.com/justyntemme/goCoinFetch"
 )
 
+func clearScreen() {
+	value, ok := clear[runtime.GOOS]
+	//runtime.GOOS -> linux, windows, darwin etc.
+	if ok { //if we defined a clear func for that platform:
+		value() //we execute it
+	} else { //unsupported platform
+		panic("Your platform is unsupported! I can't clear terminal screen :(")
+	}
+}
+
+func init() {
+
+	clear = make(map[string]func())
+	clear["linux"] = func() {
+		cmd := exec.Command("clear")
+		cmd.Stdout = os.Stdout
+		cmd.Run()
+	}
+	clear["windows"] = func() {
+		cmd := exec.Command("cls")
+		cmd.Stdout = os.Stdout
+		cmd.Run()
+	}
+	clear["darwin"] = func() {
+		cmd := exec.Command("clear")
+		cmd.Stdout = os.Stdout
+		cmd.Run()
+	}
+
+}
+
+var clear map[string]func()
+
 func main() {
 
-	var freq int
+	freq := 10
+	rotate := false
+	tickers := []string{}
+	tickersN := []string{}
 
 	flag.IntVar(&freq, "freq", 10, "Polling frequency in seconds")
+	flag.BoolVar(&rotate, "rotate", false, "Displays one ticker at a time when set to true")
 	flag.Parse()
 
+	//Hardcoding will add flag functionality soon
+	tickersN = append(tickersN, "btc")
+	tickersN = append(tickersN, "ltc")
+	tickers = append(tickers, goCoinFetch.GrabTicker("btc"))
+	tickers = append(tickers, goCoinFetch.GrabTicker("ltc"))
+
+	if rotate == true {
+		for {
+			for index, _ := range tickers {
+				fmt.Println(tickersN[index] + "/USD\n" + tickers[index])
+				time.Sleep(time.Duration(freq) * time.Second)
+				clearScreen()
+			}
+
+		}
+	}
 	for {
-		fmt.Println("BTC/USD \t ", goCoinFetch.GrabTicker("btc"))
-		fmt.Println("LTC/USD \t ", goCoinFetch.GrabTicker("ltc"))
+		for index, _ := range tickers {
+			fmt.Println(tickersN[index] + "/USD\n" + tickers[index])
+		}
 		time.Sleep(time.Duration(freq) * time.Second)
+		clearScreen()
 	}
 
 }

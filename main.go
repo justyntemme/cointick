@@ -18,15 +18,21 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"time"
+
+	"github.com/justyntemme/cointick/pflags"
 
 	"github.com/justyntemme/cointick/clear"
 	"github.com/justyntemme/cointick/configReader"
 	"github.com/justyntemme/goCoinFetch"
 )
 
+type flags struct {
+	Freq       int
+	Rotate     bool
+	ConfigPath string
+}
 type config struct {
 	tickers []string
 }
@@ -37,32 +43,15 @@ func init() {
 }
 
 func main() {
-	/* IDEAL SCOPE
+	f := pflags.ParseFlags()
 
-	parseFlags()
-	parseConfig()
+	configReader.ParseConfig(f.ConfigPath)
 
-
-
-
-	*/
-
-	freq := 10
-	rotate := false
-	configPath := ""
-
-	flag.StringVar(&configPath, "config", "", "Where to find the config file for multiple tickers")
-	flag.IntVar(&freq, "freq", 10, "Polling frequency in seconds")
-	flag.BoolVar(&rotate, "rotate", false, "Displays one ticker at a time when set to true")
-	flag.Parse()
-
-	configReader.ParseConfig(configPath)
-
-	if rotate == true {
+	if f.Rotate == true {
 		for {
 			for _, element := range configReader.ReturnTickers() {
 				fmt.Println(element + "/USD\n" + goCoinFetch.GrabTicker(element))
-				time.Sleep(time.Duration(freq) * time.Second)
+				time.Sleep(time.Duration(f.Freq) * time.Second)
 				clear.ClearScreen()
 			}
 
@@ -72,7 +61,7 @@ func main() {
 		for _, element := range configReader.ReturnTickers() {
 			fmt.Println(element + "/USD\n" + goCoinFetch.GrabTicker(element))
 		}
-		time.Sleep(time.Duration(freq) * time.Second)
+		time.Sleep(time.Duration(f.Freq) * time.Second)
 		clear.ClearScreen()
 	}
 

@@ -38,6 +38,15 @@ func init() {
 }
 
 func main() {
+	/* IDEAL SCOPE
+
+	parseFlags()
+	parseConfig()
+
+
+
+
+	*/
 
 	freq := 10
 	rotate := false
@@ -73,8 +82,8 @@ func main() {
 	}
 	if rotate == true {
 		for {
-			for index, _ := range tickers {
-				fmt.Println(tickersN[index] + "/USD\n" + tickers[index])
+			for index, _ := range tickersN {
+				fmt.Println(tickersN[index] + "/USD\n" + goCoinFetch.GrabTicker(tickersN[index]))
 				time.Sleep(time.Duration(freq) * time.Second)
 				clear.ClearScreen()
 			}
@@ -83,7 +92,7 @@ func main() {
 	}
 	for {
 		for index, _ := range tickers {
-			fmt.Println(tickersN[index] + "/USD\n" + tickers[index])
+			fmt.Println(tickersN[index] + "/USD\n" + goCoinFetch.GrabTicker(tickersN[index]))
 		}
 		time.Sleep(time.Duration(freq) * time.Second)
 		clear.ClearScreen()

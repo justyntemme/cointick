@@ -10,8 +10,7 @@ import (
 type config struct {
 	tickers []string
 }
-c config
-
+var c := new(config)
 func ParseConfig(configPath string) {
 	tomlBytes, err := ioutil.ReadFile(configPath)
 	if err != nil {

@@ -51,7 +51,7 @@ func main() {
 	freq := 10
 	rotate := false
 	configPath := ""
-	tickers := []string{}
+
 	tickersN := []string{}
 
 	flag.StringVar(&configPath, "config", "", "Where to find the config file for multiple tickers")

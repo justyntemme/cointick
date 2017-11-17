@@ -1,7 +1,6 @@
 package configReader
 
 import (
-	"fmt"
 	"io/ioutil"
 
 	"github.com/BurntSushi/toml"
@@ -17,12 +16,12 @@ func ParseConfig(configPath string) {
 	if configPath != "" {
 		tomlBytes, err := ioutil.ReadFile(configPath)
 		if err != nil {
-			fmt.Print("Error:" + err.Error())
+			print("Error:" + err.Error())
 		}
 		tomlData := string(tomlBytes)
 
 		if _, err := toml.Decode(tomlData, &c); err != nil {
-			fmt.Println("Error:" + err.Error())
+			print("Error:" + err.Error())
 		}
 
 	} else {

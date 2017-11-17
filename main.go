@@ -18,7 +18,8 @@
 package main
 
 import (
-	"fmt"
+	"os"
+	"os/exec"
 	"time"
 
 	"github.com/justyntemme/cointick/pflags"
@@ -32,6 +33,7 @@ type flags struct {
 	Freq       int
 	Rotate     bool
 	ConfigPath string
+	Cow        bool
 }
 type config struct {
 	tickers []string
@@ -50,16 +52,28 @@ func main() {
 	if f.Rotate == true {
 		for {
 			for _, element := range configReader.ReturnTickers() {
-				fmt.Println(element + "/USD\n" + goCoinFetch.GrabTicker(element))
-				time.Sleep(time.Duration(f.Freq) * time.Second)
-				clear.ClearScreen()
+				if f.Cow == true {
+					cmd := exec.Command("cowsay " + goCoinFetch.GrabTicker(element))
+					cmd.Stdout = os.Stdout
+					cmd.Run()
+				} else {
+					print(element + "/USD\n" + goCoinFetch.GrabTicker(element) + "\n")
+					time.Sleep(time.Duration(f.Freq) * time.Second)
+					clear.ClearScreen()
+				}
 			}
 
 		}
 	}
 	for {
 		for _, element := range configReader.ReturnTickers() {
-			fmt.Println(element + "/USD\n" + goCoinFetch.GrabTicker(element))
+			if f.Cow == true {
+				cmd := exec.Command("cowsay", goCoinFetch.GrabTicker(element))
+				cmd.Stdout = os.Stdout
+				cmd.Run()
+			} else {
+				print(element + "/USD\n" + goCoinFetch.GrabTicker(element) + "\n")
+			}
 		}
 		time.Sleep(time.Duration(f.Freq) * time.Second)
 		clear.ClearScreen()
